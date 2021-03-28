@@ -11,4 +11,6 @@ public class mpaUsrController {
 	public String showMain() {
 		return "안녕";
 	}
+	
+	
 }
