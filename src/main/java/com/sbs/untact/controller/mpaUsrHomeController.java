@@ -5,11 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class mpaUsrController {
-	@RequestMapping("/mpaUsrController/home/main")
-	@ResponseBody
+public class mpaUsrHomeController {
+	@RequestMapping("/mpaUsr/home/main")
 	public String showMain() {
-		return "안녕";
+		return "/mpaUsr/home/main";
 	}
 	
 	

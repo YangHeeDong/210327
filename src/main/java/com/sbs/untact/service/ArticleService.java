@@ -11,38 +11,52 @@ import com.sbs.untact.dto.ResultData;
 public class ArticleService {
 	@Autowired
 	private ArticleDao articleDao;
-	
-	//게시물 번호로 Article 리턴
-	public Article getArticleById(int id) {
-		return articleDao.getArticleById(id);
-	}	
-	
-	//게시물 생성
-	public ResultData writeArticle(String title, String body) {
-		int id= articleDao.writeArticle(title, body);
-		return new ResultData("S-1", "게시물을 추가했습니다.", "id",id);
-	}
-	
-	//삭제시도 성공 true 실패 false로 리턴
-	public ResultData deleteArticleById(int id) {
-		Article article = getArticleById(id);
-		if(article==null) {
-			return new ResultData("F-1", id+"번의 게시물은 존재하지 않습니다.");
-		}
-		articleDao.deleteArticle(article);
-		return new ResultData("S-1", "게시물을 삭제했습니다.");
-	}
-	
-	//게시물 수정
+
 	public ResultData modifyArticle(int id, String title, String body) {
 		Article article = getArticleById(id);
-		
-		if(article ==null) {
-			return new ResultData("F-1", id+"번의 게시물은 존재하지 않습니다.");
+
+		if ( isEmpty(article)) {
+			return new ResultData("F-1", "존재하지 않는 게시물 번호입니다.", "id", id);
 		}
-		
-		articleDao.modifyArticle(article,title,body);
-		return new ResultData("S-1", id+"번의 게시물을 수정하였습니다.");
+
+		articleDao.modifyArticle(id, title, body);
+
+		return new ResultData("S-1", "게시물이 수정되었습니다.", "id", id);
 	}
 
+
+	public ResultData deleteArticleById(int id) {
+		Article article = getArticleById(id);
+
+		if ( isEmpty(article)) {
+			return new ResultData("F-1", "존재하지 않는 게시물 번호입니다.", "id", id);
+		}
+		
+		articleDao.deleteArticleById(id);
+
+		return new ResultData("S-1", id + "번 게시물이 삭제되었습니다.", "id", id);
+	}
+
+	public ResultData writeArticle(String title, String body) {
+		int boardId = 3; // 가짜 데이터
+		int memberId = 3; // 가짜 데이터
+		articleDao.writeArticle(boardId, memberId, title, body);
+		int id = articleDao.getArticldLastInsertId();
+
+		return new ResultData("S-1", "게시물이 작성되었습니다.", "id", id);
+	}
+
+	public Article getArticleById(int id) {
+		return articleDao.getArticleById(id);
+	}
+	
+	private boolean isEmpty(Article article) {
+		if(article == null) {
+			return true;
+		}
+		else if(article.isDelStatus()) {
+			return true;
+		}
+		return false;
+	}
 }
