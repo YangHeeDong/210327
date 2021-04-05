@@ -11,5 +11,8 @@ public class mpaUsrHomeController {
 		return "/mpaUsr/home/main";
 	}
 	
-	
+	@RequestMapping("/")
+	public String showMainRoot() {
+		return "redirect:/mpaUsr/home/main";
+	}
 }

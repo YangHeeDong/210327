@@ -1,9 +1,12 @@
 package com.sbs.untact.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.sbs.untact.dto.Article;
+import com.sbs.untact.dto.Board;
 
 @Mapper
 public interface ArticleDao {
@@ -16,4 +19,10 @@ public interface ArticleDao {
 	void deleteArticleById(@Param("id") int id);
 	
 	int getArticldLastInsertId();
+
+	Board getBoardById(@Param("id") int boardId);
+
+	int getArticleTotalCount(@Param("boardId") int boardId);
+
+	List<Article> getForPrintArticles(@Param("boardId") int boardId, @Param("limitFrom") int limitFrom,@Param("limitTake") int limitTake);
 }
