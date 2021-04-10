@@ -70,20 +70,15 @@ public class ArticleService {
 	}
 
 
-	public int getArticleTotalCount(int boardId) {
-		return articleDao.getArticleTotalCount(boardId);
+	public int getArticleTotalCount(int boardId,String searchKeywordType, String searchKeyword) {
+		return articleDao.getArticleTotalCount(boardId,searchKeywordType, searchKeyword);
 	}
 
 
-	public List<Article> getForPrintArticles(int boardId, int itemsInAPage, int page) {
+	public List<Article> getForPrintArticles(int boardId,String searchKeywordType, String searchKeyword, int itemsInAPage, int page) {
 		int limitFrom = (page-1)*itemsInAPage;
 		int limitTake = itemsInAPage;
 		
-		return articleDao.getForPrintArticles(boardId,limitFrom,limitTake);
-		
+		return articleDao.getForPrintArticles(boardId,searchKeywordType,searchKeyword, limitFrom,limitTake);
 	}
-
-
-
-
 }

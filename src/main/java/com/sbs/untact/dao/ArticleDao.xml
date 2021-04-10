@@ -9,15 +9,19 @@
 		FROM article AS a
 		WHERE a.boardId = #{boardId}
 		AND a.delStatus = 0
+		<if test="searchKeyword!=null">
+			<if test="searchKeywordType=='titleAndBody'">
+				and (A.title like CONCAT('%',#{searchKeyword},'%') or A.body like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchKeywordType=='title'">
+				and A.title like CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchKeywordType=='body'">
+				and A.body like CONCAT('%',#{searchKeyword},'%')
+			</if>
+		</if>
 		ORDER BY a.id DESC
 		LIMIT #{limitFrom},#{limitTake};
-	</select>
-
-	<select id="getBoardById" resultType="Board">
-		SELECT *
-		FROM Board AS B
-		WHERE B.id = #{id}
-		and B.delStatus = 0
 	</select>
 	
 	<select id="getArticleTotalCount" resultType="int">
@@ -25,6 +29,24 @@
 		FROM article AS A
 		WHERE A.boardId = #{boardId}
 		and A.delStatus = 0
+		<if test="searchKeyword!=null">
+			<if test="searchKeywordType=='titleAndBody'">
+				and (A.title like CONCAT('%',#{searchKeyword},'%') or A.body like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchKeywordType=='title'">
+				and A.title like CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchKeywordType=='body'">
+				and A.body like CONCAT('%',#{searchKeyword},'%')
+			</if>
+		</if>
+	</select>
+
+	<select id="getBoardById" resultType="Board">
+		SELECT *
+		FROM Board AS B
+		WHERE B.id = #{id}
+		and B.delStatus = 0
 	</select>
 
 	<select id="getArticleById" resultType="Article">

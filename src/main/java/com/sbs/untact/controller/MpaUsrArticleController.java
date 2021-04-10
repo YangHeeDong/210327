@@ -4,9 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.io.ResolverUtil.IsA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sbs.untact.dto.Article;
@@ -103,16 +106,20 @@ public class MpaUsrArticleController {
 	
 	//어느 게시판인지
 	@RequestMapping("/mpaUsr/article/list")
-	public String showList(HttpServletRequest req, int boardId,int page) {
+	public String showList(HttpServletRequest req, int boardId,@RequestParam(defaultValue = "titleAndBody") String searchKeywordType, String searchKeyword,@RequestParam(defaultValue = "1") int  page) {
 		Board board = articleService.getBoardById(boardId);
 		
-		if(board == null) {
+		if(Util.isEmpty(board)) {
 			return msgAndBack(req, "존재하지 않는 게시판 입니다.");
 		}
 		req.setAttribute("board", board);
 		
+		//searchKeyword에 null이거나 ""일 경우 null로 치환
+		if(Util.isEmpty(searchKeyword)) {
+			searchKeyword = null;
+		}
 		//게시판에 있는 게시물 총 개수
-		int totalItemsCount = articleService.getArticleTotalCount(boardId);
+		int totalItemsCount = articleService.getArticleTotalCount(boardId,searchKeywordType,searchKeyword);
 		req.setAttribute("totalItemsCount", totalItemsCount);
 		
 		//한 페이지당 보여줄 게시물 개수
@@ -121,7 +128,7 @@ public class MpaUsrArticleController {
 		int totalPage = (int) Math.ceil(totalItemsCount/(double)itemsInAPage);
 		req.setAttribute("totalPage", totalPage);
 		
-		List<Article> articles = articleService.getForPrintArticles(boardId,itemsInAPage,page );
+		List<Article> articles = articleService.getForPrintArticles(boardId,searchKeywordType,searchKeyword,itemsInAPage,page );
 		req.setAttribute("articles", articles);
 		req.setAttribute("page", page);
 
