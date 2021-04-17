@@ -30,7 +30,7 @@ public class MpaUsrArticleController {
 		return "common/redirect";
 	}
 
-	private String magAndReplace(HttpServletRequest req, String msg, String replaceUrl) {
+	private String msgAndReplace(HttpServletRequest req, String msg, String replaceUrl) {
 		req.setAttribute("msg", msg);
 		req.setAttribute("replaceUrl", replaceUrl);
 		return "common/redirect";
@@ -38,16 +38,45 @@ public class MpaUsrArticleController {
 
 	//게시물 생성
 	@RequestMapping("/mpaUsr/article/doWrite")
-	@ResponseBody
-	public ResultData doWrite(String title, String body) {
+	public String doWrite(HttpServletRequest req, int boardId, String title, String body) {
 		if(Util.isEmpty(title)) {
-			return new ResultData("F-1", "제목를 입력해 주세요");
+			return msgAndBack(req, "제목을 입력해 주세요!");
 		}
 		if(Util.isEmpty(body)) {
-			return new ResultData("F-2", "내용를 입력해 주세요");
+			return msgAndBack(req, "내용을 입력해 주세요!");
 		}
 		
-		return articleService.writeArticle(title,body);
+		ResultData rd = articleService.writeArticle(boardId,title,body);
+		
+		return msgAndReplace(req, rd.getMsg(), "/mpaUsr/article/detail?id="+rd.getBody().get("id"));
+	}
+	
+	@RequestMapping("/mpaUsr/article/write")
+	public String showWrite(HttpServletRequest req ,@RequestParam(defaultValue = "1") int boardId){
+		Board board = articleService.getBoardById(boardId);
+		
+		if(Util.isEmpty(board)) {
+			return msgAndBack(req, "없는 게시판 입니다!");
+		}
+		
+		req.setAttribute("board", board);
+		return "/mpaUsr/article/write";
+	}
+	
+	@RequestMapping("/mpaUsr/article/detail")
+	public String showDetail(HttpServletRequest req , int id){
+		Article article = articleService.getForPrintArticleById(id);
+		
+		Board board = articleService.getBoardById(article.getBoardId());
+		
+		if(Util.isEmpty(board)) {
+			return msgAndBack(req, "없는 게시판 입니다!");
+		}
+		
+		req.setAttribute("article", article);
+		req.setAttribute("board", board);
+		
+		return "/mpaUsr/article/detail";
 	}
 
 	//게시물 번호로 가져오기
@@ -83,7 +112,7 @@ public class MpaUsrArticleController {
 		
 		String replaceUrl = "../article/list?boardId="+rd.getBody().get("boardId");
 		
-		return magAndReplace(req, rd.getMsg(),replaceUrl);
+		return msgAndReplace(req, rd.getMsg(),replaceUrl);
 	}
 
 	//게시물 번호로 수정

@@ -40,8 +40,7 @@ public class ArticleService {
 		return new ResultData("S-1", id + "번 게시물이 삭제되었습니다.", "id", id,"boardId",article.getBoardId());
 	}
 
-	public ResultData writeArticle(String title, String body) {
-		int boardId = 3; // 가짜 데이터
+	public ResultData writeArticle(int boardId,String title, String body) {
 		int memberId = 3; // 가짜 데이터
 		articleDao.writeArticle(boardId, memberId, title, body);
 		int id = articleDao.getArticldLastInsertId();
@@ -80,5 +79,10 @@ public class ArticleService {
 		int limitTake = itemsInAPage;
 		
 		return articleDao.getForPrintArticles(boardId,searchKeywordType,searchKeyword, limitFrom,limitTake);
+	}
+
+
+	public Article getForPrintArticleById(int id) {
+		return articleDao.getForPrintArticleById(id);
 	}
 }

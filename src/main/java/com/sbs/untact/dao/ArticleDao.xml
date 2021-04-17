@@ -55,6 +55,16 @@
 		WHERE A.id = #{id}
 		and A.delStatus = 0
 	</select>
+	
+	<select id="getForPrintArticleById" resultType="Article">
+		SELECT A.*,
+		IFNULL(M.name, "삭제된_회원") AS extra__writerName
+		FROM article AS A
+		left join `member` AS M
+		on A.memberId = M.id
+		WHERE A.id = #{id}
+		and A.delStatus = 0
+	</select>
 
 	<update id="modifyArticle">
 		UPDATE article
