@@ -23,10 +23,16 @@
 			<span>CURRENT PAGE : </span>
 			<span>${page}</span>
 		</div>
+		<div class="plain-link-wrap gap-3 mt-4">
+            <a href="write?boardId=${board.id}" class="plain-link">
+                <span><i class="fas fa-edit"></i></span>
+                <span>글 작성</span>
+            </a>
+        </div>
 
 		<hr />
 		<hr />
-
+		
 		<div class="search-form-box mt-2 px-4">
 			<form action="" class="grid gap-2">
 				<input type="hidden" name="boardId" value="${board.id}" />

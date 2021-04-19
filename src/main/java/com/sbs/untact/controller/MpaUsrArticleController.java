@@ -3,9 +3,6 @@ package com.sbs.untact.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.io.ResolverUtil.IsA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,32 +20,20 @@ public class MpaUsrArticleController {
 	
 	@Autowired
 	ArticleService articleService;
-	
-	private String msgAndBack(HttpServletRequest req, String msg) {
-		req.setAttribute("msg", msg);
-		req.setAttribute("historyBack", true);
-		return "common/redirect";
-	}
-
-	private String msgAndReplace(HttpServletRequest req, String msg, String replaceUrl) {
-		req.setAttribute("msg", msg);
-		req.setAttribute("replaceUrl", replaceUrl);
-		return "common/redirect";
-	}
 
 	//게시물 생성
 	@RequestMapping("/mpaUsr/article/doWrite")
 	public String doWrite(HttpServletRequest req, int boardId, String title, String body) {
 		if(Util.isEmpty(title)) {
-			return msgAndBack(req, "제목을 입력해 주세요!");
+			return Util.msgAndBack(req, "제목을 입력해 주세요!");
 		}
 		if(Util.isEmpty(body)) {
-			return msgAndBack(req, "내용을 입력해 주세요!");
+			return Util.msgAndBack(req, "내용을 입력해 주세요!");
 		}
 		
 		ResultData rd = articleService.writeArticle(boardId,title,body);
 		
-		return msgAndReplace(req, rd.getMsg(), "/mpaUsr/article/detail?id="+rd.getBody().get("id"));
+		return Util.msgAndReplace(req, rd.getMsg(), "/mpaUsr/article/detail?id="+rd.getBody().get("id"));
 	}
 	
 	@RequestMapping("/mpaUsr/article/write")
@@ -56,7 +41,7 @@ public class MpaUsrArticleController {
 		Board board = articleService.getBoardById(boardId);
 		
 		if(Util.isEmpty(board)) {
-			return msgAndBack(req, "없는 게시판 입니다!");
+			return Util.msgAndBack(req, "없는 게시판 입니다!");
 		}
 		
 		req.setAttribute("board", board);
@@ -70,7 +55,7 @@ public class MpaUsrArticleController {
 		Board board = articleService.getBoardById(article.getBoardId());
 		
 		if(Util.isEmpty(board)) {
-			return msgAndBack(req, "없는 게시판 입니다!");
+			return Util.msgAndBack(req, "없는 게시판 입니다!");
 		}
 		
 		req.setAttribute("article", article);
@@ -101,18 +86,18 @@ public class MpaUsrArticleController {
 	public String doDelete(HttpServletRequest req, Integer id) {
 		
 		if(Util.isEmpty(id)) {
-			return msgAndBack(req, "번호를 입력해 주세요");
+			return Util.msgAndBack(req, "번호를 입력해 주세요");
 		}
 		
 		ResultData rd = articleService.deleteArticleById(id);
 		
 		if(rd.isFail()) {
-			return msgAndBack(req, rd.getMsg());
+			return Util.msgAndBack(req, rd.getMsg());
 		}
 		
 		String replaceUrl = "../article/list?boardId="+rd.getBody().get("boardId");
 		
-		return msgAndReplace(req, rd.getMsg(),replaceUrl);
+		return Util.msgAndReplace(req, rd.getMsg(),replaceUrl);
 	}
 
 	//게시물 번호로 수정
@@ -139,7 +124,7 @@ public class MpaUsrArticleController {
 		Board board = articleService.getBoardById(boardId);
 		
 		if(Util.isEmpty(board)) {
-			return msgAndBack(req, "존재하지 않는 게시판 입니다.");
+			return Util.msgAndBack(req, "존재하지 않는 게시판 입니다.");
 		}
 		req.setAttribute("board", board);
 		
