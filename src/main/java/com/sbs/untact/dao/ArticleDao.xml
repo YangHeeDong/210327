@@ -10,17 +10,17 @@
 		FROM article AS A
 		WHERE A.boardId = #{boardId}
 		<if test="searchKeyword != null">
-			<if test="searchKeywordTypeCode == 'titleAndBody'">
+			<if test="searchKeywordType == 'titleAndBody'">
 				AND (
 				A.title LIKE CONCAT('%', #{searchKeyword}, '%')
 				OR
 				A.body LIKE CONCAT('%', #{searchKeyword}, '%')
 				)
 			</if>
-			<if test="searchKeywordTypeCode == 'title'">
+			<if test="searchKeywordType == 'title'">
 				AND A.title LIKE CONCAT('%', #{searchKeyword}, '%')
 			</if>
-			<if test="searchKeywordTypeCode == 'body'">
+			<if test="searchKeywordType == 'body'">
 				AND A.body LIKE CONCAT('%', #{searchKeyword}, '%')
 			</if>
 		</if>

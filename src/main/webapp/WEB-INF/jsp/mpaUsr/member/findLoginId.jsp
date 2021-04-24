@@ -3,68 +3,68 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <c:set var="pageTitle"
-	value="<span><i class='far fa-clipboard'></i></span> <span>LOGIN</span>" />
+	value="<span><i class='far fa-clipboard'></i></span> <span>FIND LOGIN ID</span>" />
 
 <%@ include file="../common/head.jspf"%>
 <script>
-let MemberLogin__submitFormDone = false;
-function MemberLogin__submitForm(form) {
+let MemberFindLoginId__submitFormDone = false;
+function MemberFindLoginId__submitForm(form) {
 	
-    if ( MemberLogin__submitFormDone ) {
+    if ( MemberFindLoginId__submitFormDone ) {
         return;
     }
     
-    form.loginId.value = form.loginId.value.trim();
+    form.name.value = form.name.value.trim();
     
-    if ( form.loginId.value.length == 0 ) {
-        alert('아이디를 입력해주세요.');
-        form.loginId.focus();
+    if ( form.name.value.length == 0 ) {
+        alert('이름을 입력해주세요.');
+        form.name.focus();
         return;
     }
     
-	form.loginPw.value = form.loginPw.value.trim();
+	form.email.value = form.email.value.trim();
     
-    if ( form.loginPw.value.length == 0 ) {
-        alert('비밀번호를 입력해주세요.');
-        form.loginPw.focus();
+    if ( form.email.value.length == 0 ) {
+        alert('이메일을 입력해주세요.');
+        form.email.focus();
         return;
     }
     
     form.submit();
     
-    MemberLogin__submitFormDone = true;
+    MemberFindLoginId__submitFormDone = true;
 }
 </script>
 
 <div class="section section-article-list px-2">
 	<div class="container mx-auto">
-	    <form method="POST" action="doLogin" onsubmit="MemberLogin__submitForm(this); return false;" >
+	    <form method="POST" action="doFindLoginId" onsubmit="MemberFindLoginId__submitForm(this); return false;" >
 	        <input type="hidden" name="redirectUri" value="${param.afterLoginUri }" />
 	        <div class="form-control">
                 <label class="label">
-                    아이디
+                    이름
                 </label>
-                <input class="input input-bordered w-full" type="text" maxlength="30" name="loginId" placeholder="아이디를 입력해주세요." />
+                <input class="input input-bordered w-full" type="text" maxlength="30" name="name" placeholder="이름을 입력해주세요." />
             </div>
 
             <div class="form-control">
                 <label class="label">
-                    비밀번호
+                    이메일
                 </label>
-                <input class="input input-bordered w-full" type="password" maxlength="30" name="loginPw" placeholder="비밀번호를 입력해주세요." />
+                <input class="input input-bordered w-full" type="email" maxlength="30" name="email" placeholder="이메일을 입력해주세요." />
             </div>
             
             <div class="mt-4 btn-wrap gap-1">
                 <button type="submit" class="btn btn-primary btn-sm mb-1">
                     <span><i class="fas fa-user-plus"></i></span>
                     &nbsp;
-                    <span>로그인</span>
+                    <span>아이디 찾기</span>
                 </button>
 				
-				<a href="findLoginId" class="btn btn-sm btn-link mb-1" title="자세히 보기">
+				<a href="join" class="btn btn-sm btn-link mb-1" title="자세히 보기">
                     <span><i class="fas fa-home"></i></span>
                     &nbsp;
-                    <span>아이디 찾기</span>
+                    <span>회원가입</span>
                 </a>
                 
                 <a href="findLoginPw" class="btn btn-sm btn-link mb-1" title="자세히 보기">

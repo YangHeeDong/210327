@@ -1,87 +1,128 @@
 package com.sbs.untact.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.sbs.untact.dto.Member;
 import com.sbs.untact.dto.ResultData;
 import com.sbs.untact.service.MemberService;
 import com.sbs.untact.util.Util;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
+@Slf4j
 public class mpaUsrMemberController {
-	
-	@Autowired
-	MemberService memberService;
-	
-	@RequestMapping("/mpaUsr/member/login")
-	public String showLogin() {
-		return("mpaUsr/member/login");
-	}
-	
-	@RequestMapping("/mpaUsr/member/doLogin")
-	public String doLogin(HttpServletRequest req,HttpSession session, String loginId,String loginPw ) {
-		Member member = memberService.getMemberByLoginId(loginId); 
-		
-		if(member == null ) {
-			return Util.msgAndBack(req, "없는 아이디 입니다.");
-		}
-		if(member.getLoginPw().equals(loginPw)==false) {
-			return Util.msgAndBack(req, "비밀번호가 일치하지 않습니다.");
-		}
-		session.setAttribute("loginedMemberId", member.getId());
-		return Util.msgAndReplace(req, member.getNickname()+"님 환영합니다!", "/") ;
-	}
-	
-	@RequestMapping("/mpaUsr/member/doLogout")
-	public String doLogout(HttpServletRequest req,HttpSession session) {
-		session.removeAttribute("loginedMemberId");
-		return Util.msgAndReplace(req, "로그아웃 되었습니다.", "/") ;
-	}
-	
-	@RequestMapping("/mpaUsr/member/join")
-	public String showJoin() {
-		return("mpaUsr/member/join");
-	}
-	
-	@RequestMapping("/mpaUsr/member/doJoin")
-	public String doJoin(HttpServletRequest req, String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
-		
-		if(Util.isEmpty(loginId)) {
-			return Util.msgAndBack(req, "아이디를 입력해 주세요");
-		}
-		if(Util.isEmpty(loginPw)) {
-			return Util.msgAndBack(req, "비밀번호를 입력해 주세요");
-		}
-		if(Util.isEmpty(name)) {
-			return Util.msgAndBack(req, "이름을 입력해 주세요");
-		}
-		if(Util.isEmpty(nickname)) {
-			return Util.msgAndBack(req, "별명을 입력해 주세요");
-		}
-		if(Util.isEmpty(cellphoneNo)) {
-			return Util.msgAndBack(req, "전화번호를 입력해 주세요");
-		}
-		if(Util.isEmpty(email)) {
-			return Util.msgAndBack(req, "이메일을 입력해 주세요");
-		}
-		
-		Member oldMember = memberService.getMemberByLoginId(loginId);
-		
-		if(oldMember != null) {
-			return Util.msgAndBack(req, "중복된 아이디 입니다.");
-		}
-		
-		ResultData rd = memberService.join(loginId, loginPw, name, nickname, cellphoneNo, email);
-		
-		if (rd.isFail()) {
-            return Util.msgAndBack(req, rd.getMsg());
+    @Autowired
+    private MemberService memberService;
+    
+    @RequestMapping("/mpaUsr/member/findLoginId")
+    public String showFindLoginId(HttpServletRequest req) {
+        return "/mpaUsr/member/findLoginId";
+    }
+    
+    @RequestMapping("/mpaUsr/member/findLoginPw")
+    public String showFindLoginPw(HttpServletRequest req) {
+        return "mpaUsr/member/findLoginPw";
+    }
+
+    @RequestMapping("/mpaUsr/member/doFindLoginPw")
+    public String doFindLoginPw(HttpServletRequest req, String loginId, String name, String email, String redirectUri) {
+        if (Util.isEmpty(redirectUri)) {
+            redirectUri = "/";
         }
-		
-		return Util.msgAndReplace(req, rd.getMsg(), "/") ;
-	}
+
+        Member member = memberService.getMemberByLoginId(loginId);
+
+        if (member == null) {
+            return Util.msgAndBack(req, "일치하는 회원이 존재하지 않습니다.");
+        }
+
+        if (member.getName().equals(name) == false) {
+            return Util.msgAndBack(req, "일치하는 회원이 존재하지 않습니다.");
+        }
+
+        if (member.getEmail().equals(email) == false) {
+            return Util.msgAndBack(req, "일치하는 회원이 존재하지 않습니다.");
+        }
+
+        ResultData notifyTempLoginPwByEmailRs = memberService.notifyTempLoginPwByEmail(member);
+
+        return Util.msgAndReplace(req, notifyTempLoginPwByEmailRs.getMsg(), redirectUri);
+    }
+    
+    @RequestMapping("/mpaUsr/member/doFindLoginId")
+    public String doFindLoginId(HttpServletRequest req,String name, String email,String redirectUri) {
+    	if ( Util.isEmpty(redirectUri) ) {
+            redirectUri = "/";
+        }
+    	
+    	Member member = memberService.getFindLoginIdByNameAndEmail(name,email);
+    	
+    	if(member==null) {
+    		return Util.msgAndBack(req, "일치하는 회원의 정보가 없습니다.");
+    	}
+    	
+        return Util.msgAndReplace(req, "회원님의 아이디는 "+member.getLoginId()+" 입니다.", redirectUri);
+    }
+
+    @RequestMapping("/mpaUsr/member/login")
+    public String showLogin(HttpServletRequest req) {
+        return "mpaUsr/member/login";
+    }
+
+    @RequestMapping("/mpaUsr/member/doLogout")
+    public String doLogout(HttpServletRequest req, HttpSession session) {
+        session.removeAttribute("loginedMemberId");
+
+        String msg = "로그아웃 되었습니다.";
+        return Util.msgAndReplace(req, msg, "/");
+    }
+
+    @RequestMapping("/mpaUsr/member/doLogin")
+    public String doLogin(HttpServletRequest req, HttpSession session, String loginId, String loginPw, String redirectUri) {
+        if ( Util.isEmpty(redirectUri) ) {
+            redirectUri = "/";
+        }
+
+        Member member = memberService.getMemberByLoginId(loginId);
+
+        if (member == null) {
+            return Util.msgAndBack(req, loginId + "(은)는 존재하지 않는 로그인아이디 입니다.");
+        }
+
+        if (member.getLoginPw().equals(loginPw) == false) {
+            return Util.msgAndBack(req, "비밀번호가 일치하지 않습니다.");
+        }
+
+        //HttpSession session = req.getSession();
+        session.setAttribute("loginedMemberId", member.getId());
+
+        String msg = "환영합니다.";
+        return Util.msgAndReplace(req, msg, redirectUri);
+    }
+
+    @RequestMapping("/mpaUsr/member/join")
+    public String showJoin(HttpServletRequest req) {
+        return "mpaUsr/member/join";
+    }
+
+    @RequestMapping("/mpaUsr/member/doJoin")
+    public String doJoin(HttpServletRequest req, String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+        Member oldMember = memberService.getMemberByLoginId(loginId);
+
+        if (oldMember != null) {
+            return Util.msgAndBack(req, loginId + "(은)는 이미 사용중인 로그인아이디 입니다.");
+        }
+
+        ResultData joinRd = memberService.join(loginId, loginPw, name, nickname, cellphoneNo, email);
+
+        if (joinRd.isFail()) {
+            return Util.msgAndBack(req, joinRd.getMsg());
+        }
+
+        return Util.msgAndReplace(req, joinRd.getMsg(), "/");
+    }
 }
