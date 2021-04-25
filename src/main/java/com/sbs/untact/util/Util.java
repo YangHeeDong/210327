@@ -159,7 +159,7 @@ public class Util {
     public static String getUriEncoded(String str) {
         try {
             return URLEncoder.encode(str, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             return str;
         }
     }

@@ -2,6 +2,7 @@ package com.sbs.untact.controller;
 
 import com.sbs.untact.dto.Member;
 import com.sbs.untact.dto.ResultData;
+import com.sbs.untact.dto.Rq;
 import com.sbs.untact.service.MemberService;
 import com.sbs.untact.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,51 @@ import javax.servlet.http.HttpSession;
 public class mpaUsrMemberController {
     @Autowired
     private MemberService memberService;
+    
+    @RequestMapping("/mpaUsr/member/checkPassword")
+    public String showCheckPassword(HttpServletRequest req) {
+    	return "/mpaUsr/member/checkPassword";
+    }
+    
+    @RequestMapping("/mpaUsr/member/doCheckPassword")
+    public String doCheckPassword(HttpServletRequest req,int id,String loginPw,String redirectUri) {
+    	
+    	Member member = memberService.getMemberById(id);
+    	
+    	if(member.getLoginPw().equals(loginPw)==false) {
+    		return Util.msgAndBack(req, "비밀번호가 일치하지 않습니다");
+    	}
+    	
+    	return Util.msgAndReplace(req, "비밀번호가 확인 되었습니다.", redirectUri);
+    }
+    
+    @RequestMapping("/mpaUsr/member/modify")
+    public String showModify(HttpServletRequest req) {
+    	return "/mpaUsr/member/modify";
+    }
+    
+    @RequestMapping("/mpaUsr/member/doModify")
+    public String doModify(HttpServletRequest req, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+    	
+    	int id = ((Rq)req.getAttribute("rq")).getLoginedMemberId();
+    	
+    	if(loginPw != null && loginPw.length()==0) {
+    		loginPw = null;
+    	}
+
+        ResultData modifyRd = memberService.doModify(id, loginPw, name, nickname, cellphoneNo, email);
+
+        if (modifyRd.isFail()) {
+            return Util.msgAndBack(req, modifyRd.getMsg());
+        }
+
+        return Util.msgAndReplace(req, modifyRd.getMsg(), "/");
+    }
+    
+    @RequestMapping("/mpaUsr/member/mypage")
+    public String showMypage(HttpServletRequest req) {
+    	return "/mpaUsr/member/mypage";
+    }
     
     @RequestMapping("/mpaUsr/member/findLoginId")
     public String showFindLoginId(HttpServletRequest req) {
@@ -73,14 +119,6 @@ public class mpaUsrMemberController {
         return "mpaUsr/member/login";
     }
 
-    @RequestMapping("/mpaUsr/member/doLogout")
-    public String doLogout(HttpServletRequest req, HttpSession session) {
-        session.removeAttribute("loginedMemberId");
-
-        String msg = "로그아웃 되었습니다.";
-        return Util.msgAndReplace(req, msg, "/");
-    }
-
     @RequestMapping("/mpaUsr/member/doLogin")
     public String doLogin(HttpServletRequest req, HttpSession session, String loginId, String loginPw, String redirectUri) {
         if ( Util.isEmpty(redirectUri) ) {
@@ -124,5 +162,13 @@ public class mpaUsrMemberController {
         }
 
         return Util.msgAndReplace(req, joinRd.getMsg(), "/");
+    }
+    
+    @RequestMapping("/mpaUsr/member/doLogout")
+    public String doLogout(HttpServletRequest req, HttpSession session) {
+        session.removeAttribute("loginedMemberId");
+
+        String msg = "로그아웃 되었습니다.";
+        return Util.msgAndReplace(req, msg, "/");
     }
 }

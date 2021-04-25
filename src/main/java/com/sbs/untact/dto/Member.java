@@ -6,15 +6,19 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Member {
-	int id;
-    String regDate;
-    String updateDate;
-    String loginId;
-    String loginPw;
-    String name;
-    String nickname;
-    String email;
-    int cellphoneNo;
-    boolean delStatus;
-    String delDate;
+	private int id;
+	private String regDate;
+	private String updateDate;
+	private String loginId;
+	private String loginPw;
+	private String name;
+	private String nickname;
+	private String email;
+	private int cellphoneNo;
+	private boolean delStatus;
+	private String delDate;
+    
+    public String getAuthLevelName() {
+    	return "일반회원";
+    }
 }

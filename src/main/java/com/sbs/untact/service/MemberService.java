@@ -34,7 +34,9 @@ public class MemberService {
         if (sendResultData.isFail()) {
             return sendResultData;
         }
-
+        
+        tempPassword = Util.sha256(tempPassword);
+        
         setTempPassword(actor, tempPassword);
 
         return new ResultData("S-1", "계정의 이메일주소로 임시 패스워드가 발송되었습니다.");
@@ -65,7 +67,15 @@ public class MemberService {
 	}
 
 	public Member getFindLoginIdByNameAndEmail(String name, String email) {
+		
 		return memberDao.getFindLoginIdByNameAndEmail(name,email);
+	}
+
+	public ResultData doModify(int id, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+		
+		memberDao.modify(id, loginPw, name, nickname, cellphoneNo, email);
+		
+		return new ResultData("S-1", "수정하였습니다.");
 	}
 
 }

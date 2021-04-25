@@ -115,6 +115,30 @@ updateDate = NOW(),
 `code`= 'Free',
 `name`= 'Free';
 
+SELECT * FROM board
+WHERE id =1;
+
+SELECT COUNT(*) FROM article
+WHERE boardId = 1
+AND delStatus = 0;
+
+SELECT * FROM article
+WHERE boardId = 1
+AND delStatus = 0
+ORDER BY id DESC
+LIMIT 0,10;
+
+SELECT *FROM article;
+
+SELECT LAST_INSERT_ID();
+
+
+DESC board;
+
+SELECT * FROM article
+WHERE `body` = '본문2';
+
+DESC article;
 
 CREATE TABLE `member`(
     id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '번호',
@@ -137,7 +161,7 @@ loginId = 'user1',
 loginPw = 'user1',
 `name` = '유저1이름',
 nickname = '유저1별명',
-email = 'jangka512@gmail.com',
+email = 'gmlehd0201@gmail.com',
 cellphoneNo = '01012341234';
 
 # 회원 테스트 데이터 생성
@@ -149,7 +173,7 @@ loginId = 'user2',
 loginPw = 'user2',
 `name` = '유저2이름',
 nickname = '유저2별명',
-email = 'jangka512@gmail.com',
+email = 'gmlehd0201@gmail.com',
 cellphoneNo = '01012341234';
 
 # 회원 테스트 데이터 생성
@@ -161,5 +185,20 @@ loginId = 'user3',
 loginPw = 'user3',
 `name` = '유저3이름',
 nickname = '유저3별명',
-email = 'jangka512@gmail.com',
+email = 'gmlehd0201@gmail.com',
 cellphoneNo = '01012341234'; 
+
+SELECT a.*,m.nickname FROM article AS a
+LEFT JOIN `member` AS m
+ON a.memberId = m.id
+WHERE A.id = 1
+AND A.delStatus = 0;
+
+
+SELECT * FROM `member`;
+
+SELECT * FROM article;
+
+SELECT LAST_INSERT_ID();
+
+ALTER TABLE `member` MODIFY COLUMN loginPw VARCHAR(64) NOT NULL;
