@@ -7,6 +7,7 @@ import com.sbs.untact.service.MemberService;
 import com.sbs.untact.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -33,16 +34,38 @@ public class mpaUsrMemberController {
     		return Util.msgAndBack(req, "비밀번호가 일치하지 않습니다");
     	}
     	
+    	String authCode = memberService.genCheckPasswordAuthCode(member.getId());
+    	
+    	redirectUri = Util.getNewUri(redirectUri, "checkPasswordAuthCode", authCode);
+    	
     	return Util.msgAndReplace(req, "비밀번호가 확인 되었습니다.", redirectUri);
     }
     
     @RequestMapping("/mpaUsr/member/modify")
-    public String showModify(HttpServletRequest req) {
+    public String showModify(HttpServletRequest req, String checkPasswordAuthCode ) {
+    	Member loginedMember = ((Rq)req.getAttribute("rq")).getLoginedMember();
+    	
+    	ResultData checkValidCheckPasswordAuthCodeResultData = memberService
+    			.checkValidCheckPasswordAuthCode(loginedMember.getId(), checkPasswordAuthCode);
+    	
+    	if(checkValidCheckPasswordAuthCodeResultData.isFail()) {
+    		return Util.msgAndBack(req, checkValidCheckPasswordAuthCodeResultData.getMsg());
+    	}
+    	
     	return "/mpaUsr/member/modify";
     }
     
     @RequestMapping("/mpaUsr/member/doModify")
-    public String doModify(HttpServletRequest req, String loginPw, String name, String nickname, String cellphoneNo, String email) {
+    public String doModify(HttpServletRequest req, String loginPw, String name, String nickname, String cellphoneNo, String email, String checkPasswordAuthCode) {
+    	
+    	Member loginedMember = ((Rq)req.getAttribute("rq")).getLoginedMember();
+    	
+    	ResultData checkValidCheckPasswordAuthCodeResultData = memberService
+    			.checkValidCheckPasswordAuthCode(loginedMember.getId(), checkPasswordAuthCode);
+    	
+    	if(checkValidCheckPasswordAuthCodeResultData.isFail()) {
+    		return Util.msgAndBack(req, checkValidCheckPasswordAuthCodeResultData.getMsg());
+    	}
     	
     	int id = ((Rq)req.getAttribute("rq")).getLoginedMemberId();
     	
@@ -137,7 +160,17 @@ public class mpaUsrMemberController {
 
         //HttpSession session = req.getSession();
         session.setAttribute("loginedMemberId", member.getId());
-
+        boolean usingTempPassword = memberService.usingTempPassword(member.getId());
+        boolean needToChangPassword = memberService.needToChangPassword(member.getId());
+        
+        if(needToChangPassword) {
+        	return Util.msgAndReplace(req, "현재 비밀번호를 사용한지 "+memberService.getNeedToChangePasswordFreeDays()+"일이 지났습니다. 비밀번호를 변경해 주세요", "/mpaUsr/member/mypage");
+        }
+        
+        if(usingTempPassword) {
+        	return Util.msgAndReplace(req, "임시 비밀번호를 사용중입니다 비밀번호를 변경해 주세요", "/mpaUsr/member/mypage");
+        }
+        
         String msg = "환영합니다.";
         return Util.msgAndReplace(req, msg, redirectUri);
     }

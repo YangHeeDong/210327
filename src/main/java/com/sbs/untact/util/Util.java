@@ -36,6 +36,14 @@ public class Util {
 
         return sb.toString();
     }
+    
+    public static String getDateStrLater(long seconds) {
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String dateStr = format1.format(System.currentTimeMillis() + seconds * 1000);
+
+        return dateStr;
+    }
 
     public static String sha256(String base) {
         try {

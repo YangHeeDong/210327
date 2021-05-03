@@ -29,6 +29,7 @@ custom:
   siteName: 인스타
   emailFrom: no-reply@localhost
   emailFromName: 인스타알림봇
+  needToChangePasswordFreeDays: 90
   logging:
     dir: log
     level: debug
