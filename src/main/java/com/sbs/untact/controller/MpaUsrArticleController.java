@@ -1,19 +1,25 @@
 package com.sbs.untact.controller;
 
-import com.sbs.untact.dto.Article;
-import com.sbs.untact.dto.Board;
-import com.sbs.untact.dto.ResultData;
-import com.sbs.untact.service.ArticleService;
-import com.sbs.untact.util.Util;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import com.sbs.untact.dto.Article;
+import com.sbs.untact.dto.Board;
+import com.sbs.untact.dto.Reply;
+import com.sbs.untact.dto.ResultData;
+import com.sbs.untact.dto.Rq;
+import com.sbs.untact.service.ArticleService;
+import com.sbs.untact.service.ReplyService;
+import com.sbs.untact.util.Util;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
@@ -21,17 +27,22 @@ public class MpaUsrArticleController {
 
     @Autowired
     private ArticleService articleService;
+    @Autowired
+    private ReplyService replyService;
 
     @RequestMapping("/mpaUsr/article/detail")
     public String showDetail(HttpServletRequest req, int id) {
         Article article = articleService.getForPrintArticleById(id);
-
+        List<Reply> replies = replyService.getForPrintRepliesByRelTypeCodeAndRelId("article", article.getId());
+        
         if (article == null) {
             return Util.msgAndBack(req, id + "번 게시물이 존재하지 않습니다.");
         }
 
         Board board = articleService.getBoardById(article.getBoardId());
-
+        
+        
+        req.setAttribute("replies", replies);
         req.setAttribute("article", article);
         req.setAttribute("board", board);
 
@@ -61,7 +72,7 @@ public class MpaUsrArticleController {
             return Util.msgAndBack(req, "내용을 입력해주세요.");
         }
 
-        int memberId = 3; // 임시
+        int memberId = ((Rq)req.getAttribute("rq")).getLoginedMemberId();
         ResultData writeArticleRd = articleService.writeArticle(boardId, memberId, title, body);
 
         if (writeArticleRd.isFail()) {

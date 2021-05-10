@@ -31,15 +31,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/error");
 
         registry.addInterceptor(needToLoginInterceptor)
-                .addPathPatterns("/mpaUsr/article/write")
-                .addPathPatterns("/mpaUsr/article/doWrite")
-                .addPathPatterns("/mpaUsr/article/doDelete")
-                .addPathPatterns("/mpaUsr/article/modify")
-                .addPathPatterns("/mpaUsr/article/doModify")
-                .addPathPatterns("/mpaUsr/member/modify")
-                .addPathPatterns("/mpaUsr/member/doModify")
-                .addPathPatterns("/mpaUsr/member/checkPasword")
-                .addPathPatterns("/mpaUsr/member/doCheckPasword");
+		        .addPathPatterns("/mpaUsr/article/write")
+		        .addPathPatterns("/mpaUsr/article/doWrite")
+		        .addPathPatterns("/mpaUsr/article/doDelete")
+		        .addPathPatterns("/mpaUsr/article/modify")
+		        .addPathPatterns("/mpaUsr/article/doModify")
+		        .addPathPatterns("/mpaUsr/reply/doWrite")
+		        .addPathPatterns("/mpaUsr/reply/doDelete")
+		        .addPathPatterns("/mpaUsr/reply/doDeleteAjax")
+		        .addPathPatterns("/mpaUsr/reply/modify")
+		        .addPathPatterns("/mpaUsr/reply/doModify")
+		        .addPathPatterns("/mpaUsr/member/modify")
+		        .addPathPatterns("/mpaUsr/member/doModify")
+		        .addPathPatterns("/mpaUsr/member/checkPassword")
+		        .addPathPatterns("/mpaUsr/member/doCheckPassword");
 
         registry.addInterceptor(needToLogoutInterceptor)
                 .addPathPatterns("/mpaUsr/member/login")

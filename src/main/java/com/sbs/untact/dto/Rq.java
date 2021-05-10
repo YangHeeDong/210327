@@ -7,6 +7,8 @@ import com.sbs.untact.util.Util;
 import lombok.Getter;
 
 public class Rq {
+	@Getter
+	private boolean isAjax;
     private String currentUrl;
     private String currentUri;
     private Member loginedMember;
@@ -14,14 +16,19 @@ public class Rq {
     @Getter
     private boolean needToChangPassword;
 
-    public Rq(Member loginedMember, String currentUri,Map<String, String> paramMap,boolean needToChangPassword) {
-        this.loginedMember = loginedMember;
+    public Rq(boolean isAjax, Member loginedMember, String currentUri,Map<String, String> paramMap,boolean needToChangPassword) {
+        this.isAjax = isAjax;
+    	this.loginedMember = loginedMember;
         this.currentUrl = currentUri.split("\\?")[0];
         this.currentUri = currentUri;
         this.paramMap = paramMap;
         this.needToChangPassword = needToChangPassword;
     }
-
+    
+    public String getParamJsonStr() {
+    	return Util.toJsonStr(paramMap);
+    }
+    
     public boolean isLogined() {
         return loginedMember != null;
     }
@@ -50,7 +57,7 @@ public class Rq {
         return Util.getUriEncoded(getCurrentUri());
     }
 
-    private String getCurrentUri() {
+    public String getCurrentUri() {
         return currentUri;
     }
 

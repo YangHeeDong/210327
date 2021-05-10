@@ -17,9 +17,18 @@ public class NeedToLoginInterceptor implements HandlerInterceptor {
         Rq rq = (Rq) req.getAttribute("rq");
 
         if (rq.isNotLogined()) {
-            resp.setContentType("text/html; charset=UTF-8");
-            String afterLoginUri = rq.getEncodedCurrentUri();
-            resp.getWriter().append(Util.msgAndReplace("로그인 후 이용해주세요.", "../member/login?afterLoginUri=" + afterLoginUri));
+        	String resultCode = "F-A";
+            String resultMsg = "로그인 후 이용해주세요.";
+
+            if ( rq.isAjax() ) {
+                resp.setContentType("application/json; charset=UTF-8");
+                resp.getWriter().append("{\"resultCode\":\"" + resultCode + "\",\"msg\":\"" + resultMsg + "\"}");
+            }
+            else {
+                resp.setContentType("text/html; charset=UTF-8");
+                String afterLoginUri = rq.getEncodedCurrentUri();
+                resp.getWriter().append(Util.msgAndReplace(resultMsg, "../member/login?afterLoginUri=" + afterLoginUri));
+            }
             return false;
         }
 
