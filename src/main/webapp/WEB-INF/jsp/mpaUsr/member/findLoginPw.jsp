@@ -63,7 +63,7 @@ function MemberFindLoginPw__submitForm(form) {
 
             <div class="mt-4 btn-wrap gap-1">
                 <button type="submit" href="#" class="btn btn-primary btn-sm mb-1">
-                    <span><i class="fas fa-sign-in-alt"></i></span>
+                    <span><i class="fas fa-search"></i></span>
                     &nbsp;
                     <span>비빌번호 찾기</span>
                 </button>
@@ -75,13 +75,13 @@ function MemberFindLoginPw__submitForm(form) {
                 </a>
 
                 <a href="../member/join" type="submit" href="#" class="btn btn-link btn-sm mb-1">
-                    <span><i class="fas fa-sign-in-alt"></i></span>
+                    <span><i class="fas fa-user-plus"></i></span>
                     &nbsp;
                     <span>회원가입</span>
                 </a>
 
                 <a href="../member/findLoginId" type="submit" href="#" class="btn btn-link btn-sm mb-1">
-                    <span><i class="fas fa-sign-in-alt"></i></span>
+                    <span><i class="fas fa-search"></i></span>
                     &nbsp;
                     <span>아이디 찾기</span>
                 </a>

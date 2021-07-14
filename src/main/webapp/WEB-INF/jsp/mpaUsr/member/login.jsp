@@ -62,24 +62,30 @@ function MemberLogin__submitForm(form) {
             
             <div class="mt-4 btn-wrap gap-1">
                 <button type="submit" class="btn btn-primary btn-sm mb-1">
-                    <span><i class="fas fa-user-plus"></i></span>
+                    <span><i class="fas fa-sign-in-alt"></i></span>
                     &nbsp;
                     <span>로그인</span>
                 </button>
 				
 				<a href="findLoginId" class="btn btn-sm btn-link mb-1" title="자세히 보기">
-                    <span><i class="fas fa-home"></i></span>
+                    <span><i class="fas fa-search"></i></span>
                     &nbsp;
                     <span>아이디 찾기</span>
                 </a>
                 
                 <a href="findLoginPw" class="btn btn-sm btn-link mb-1" title="자세히 보기">
-                    <span><i class="fas fa-home"></i></span>
+                    <span><i class="fas fa-search"></i></span>
                     &nbsp;
                     <span>비밀번호 찾기</span>
                 </a>
-
-                <a href="/" class="btn btn-sm mb-1" title="자세히 보기">
+				
+				<a href="join" class="btn btn-sm btn-link mb-1" title="자세히 보기">
+                    <span><i class="fas fa-user-plus"></i></span>
+                    &nbsp;
+                    <span>회원가입</span>
+                </a>
+				
+                <a href="/" class="btn btn-sm btn-link mb-1" title="자세히 보기">
                     <span><i class="fas fa-home"></i></span>
                     &nbsp;
                     <span>홈</span>
