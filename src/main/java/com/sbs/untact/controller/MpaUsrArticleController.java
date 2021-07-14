@@ -82,34 +82,61 @@ public class MpaUsrArticleController {
         String replaceUri = "detail?id=" + writeArticleRd.getBody().get("id");
         return Util.msgAndReplace(req, writeArticleRd.getMsg(), replaceUri);
     }
-
-    @RequestMapping("/mpaUsr/article/doModify")
-    @ResponseBody
-    public ResultData doModify(Integer id, String title, String body) {
+    
+    @RequestMapping("/mpaUsr/article/showModify")
+    public String ShowModify(HttpServletRequest req, Integer id, String redirectUri) {
 
         if (Util.isEmpty(id)) {
-            return new ResultData("F-1", "번호를 입력해주세요.");
+            return Util.msgAndBack(req, "게시물 번호가 입력되지 않았습니다.");
+        }
+        
+        Article article = articleService.getArticleById(id);
+        
+        if(Util.isEmpty(article)) {
+        	return Util.msgAndBack(req, "존재하지 않는 게시물 입니다.");
+        }
+        
+        if(article.getMemberId() != ((Rq)req.getAttribute("rq")).getLoginedMemberId()) {
+        	return Util.msgAndBack(req, "권한이 없습니다!");
+        }
+        
+        req.setAttribute("article", article);
+        
+        return "/mpaUsr/article/showModify";
+    }
+    
+
+    @RequestMapping("/mpaUsr/article/doModify")
+    public String doModify(HttpServletRequest req, Integer id, String title, String body,String redirectUri) {
+
+        if (Util.isEmpty(id)) {
+            return Util.msgAndBack(req, "번호를 입력해주세요.");
         }
 
         if (Util.isEmpty(title)) {
-            return new ResultData("F-2", "제목을 입력해주세요.");
+            return Util.msgAndBack(req, "제목을 입력해주세요.");
         }
 
         if (Util.isEmpty(body)) {
-            return new ResultData("F-3", "내용을 입력해주세요.");
+        	return Util.msgAndBack(req, "내용을 입력해주세요.");
         }
 
         Article article = articleService.getArticleById(id);
 
-        if (article == null) {
-            return new ResultData("F-4", "존재하지 않는 게시물 번호입니다.");
+        if(Util.isEmpty(article)) {
+        	return Util.msgAndBack(req, "존재하지 않는 게시물 입니다.");
         }
-
-        return articleService.modifyArticle(id, title, body);
+        
+        if(article.getMemberId() != ((Rq)req.getAttribute("rq")).getLoginedMemberId()) {
+        	return Util.msgAndBack(req, "권한이 없습니다!");
+        }
+        
+        ResultData rd =articleService.modifyArticle(id, title, body);
+        
+        return Util.msgAndReplace(req, rd.getMsg(), redirectUri);
     }
 
     @RequestMapping("/mpaUsr/article/doDelete")
-
     public String doDelete(HttpServletRequest req, Integer id) {
         if (Util.isEmpty(id)) {
             return Util.msgAndBack(req, "id를 입력해주세요.");

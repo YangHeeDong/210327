@@ -1,24 +1,32 @@
 package com.sbs.untact.controller;
 
-import com.sbs.untact.dto.Member;
-import com.sbs.untact.dto.ResultData;
-import com.sbs.untact.dto.Rq;
-import com.sbs.untact.service.MemberService;
-import com.sbs.untact.util.Util;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
+
+import com.sbs.untact.dto.Member;
+import com.sbs.untact.dto.ResultData;
+import com.sbs.untact.dto.Rq;
+import com.sbs.untact.service.GenFileService;
+import com.sbs.untact.service.MemberService;
+import com.sbs.untact.util.Util;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
 public class mpaUsrMemberController {
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private GenFileService genFileService;
     
     @RequestMapping("/mpaUsr/member/checkPassword")
     public String showCheckPassword(HttpServletRequest req) {
@@ -56,7 +64,7 @@ public class mpaUsrMemberController {
     }
     
     @RequestMapping("/mpaUsr/member/doModify")
-    public String doModify(HttpServletRequest req, String loginPw, String name, String nickname, String cellphoneNo, String email, String checkPasswordAuthCode) {
+    public String doModify(HttpServletRequest req, String loginPw, String name, String nickname, String cellphoneNo, String email, String checkPasswordAuthCode, MultipartRequest multipartRequest) {
     	
     	Member loginedMember = ((Rq)req.getAttribute("rq")).getLoginedMember();
     	
@@ -72,12 +80,26 @@ public class mpaUsrMemberController {
     	if(loginPw != null && loginPw.length()==0) {
     		loginPw = null;
     	}
-
+    	
         ResultData modifyRd = memberService.doModify(id, loginPw, name, nickname, cellphoneNo, email);
 
         if (modifyRd.isFail()) {
             return Util.msgAndBack(req, modifyRd.getMsg());
         }
+        
+        if(req.getParameter("deleteFile__member__0__extra__profileImg__1")!=null) {
+        	genFileService.deleteGenFile("member", id, "extra", "profileImg", 1);
+        }
+        
+    	Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+    	
+    	for (String fileInputName : fileMap.keySet() /*fileMap안에 있는 Key배열 속 key만큼 반복*/) {
+    		MultipartFile multipartFile = fileMap.get(fileInputName);
+    		
+    		if(multipartFile.isEmpty()== false) {
+    			genFileService.save(multipartFile, loginedMember.getId());
+    		}
+    	}
 
         return Util.msgAndReplace(req, modifyRd.getMsg(), "/");
     }
@@ -181,8 +203,10 @@ public class mpaUsrMemberController {
     }
 
     @RequestMapping("/mpaUsr/member/doJoin")
-    public String doJoin(HttpServletRequest req, String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email) {
-        Member oldMember = memberService.getMemberByLoginId(loginId);
+    public String doJoin(HttpServletRequest req, String loginId, String loginPw,
+    		String name, String nickname, String cellphoneNo, String email, MultipartRequest multipartRequest) {
+    	
+    	Member oldMember = memberService.getMemberByLoginId(loginId);
 
         if (oldMember != null) {
             return Util.msgAndBack(req, loginId + "(은)는 이미 사용중인 로그인아이디 입니다.");
@@ -193,7 +217,19 @@ public class mpaUsrMemberController {
         if (joinRd.isFail()) {
             return Util.msgAndBack(req, joinRd.getMsg());
         }
-
+        
+        int newMemberId =(int)joinRd.getBody().get("id");
+        
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+    	
+    	for (String fileInputName : fileMap.keySet() /*fileMap안에 있는 Key배열 속 key만큼 반복*/) {
+    		MultipartFile multipartFile = fileMap.get(fileInputName);
+    		
+    		if(multipartFile.isEmpty()== false) {
+    			genFileService.save(multipartFile, newMemberId);
+    		}
+    	}
+        
         return Util.msgAndReplace(req, joinRd.getMsg(), "/");
     }
     

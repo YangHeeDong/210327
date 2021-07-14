@@ -65,6 +65,22 @@ function MemberModify__submitForm(form) {
         form.email.focus();
         return;
     }
+	
+    const deleteProfileImgFileInput = form["deleteFile__member__0__extra__profileImg__1"];
+    if ( deleteProfileImgFileInput.checked ) {
+        form["file__member__0__extra__profileImg__1"].value = '';
+    }
+    
+    const maxSizeMb = 10;
+    const maxSize = maxSizeMb * 1024 * 1024;
+    const profileImgFileInput = form["file__member__0__extra__profileImg__1"];
+    if (profileImgFileInput.value) {
+        if (profileImgFileInput.files[0].size > maxSize) {
+            alert(maxSizeMb + "MB 이하의 파일을 업로드 해주세요.");
+            profileImgFileInput.focus();
+            return;
+        }
+    }
     
     form.cellphoneNo.value = form.cellphoneNo.value.trim();
     
@@ -86,9 +102,9 @@ function MemberModify__submitForm(form) {
 }
 </script>
 
-<div class="section section-article-list px-2">
+<div class="section section-member-modify px-2">
 	<div class="container mx-auto">
-	    <form method="POST" action="doModify" onsubmit="MemberModify__submitForm(this); return false;" >
+	    <form method="POST" enctype="multipart/form-data" action="doModify" onsubmit="MemberModify__submitForm(this); return false;" >
 	    	<input type="hidden" name="loginPw" />
 	    	<input type="hidden" name="checkPasswordAuthCode" value="${param.checkPasswordAuthCode }" />
 	        <div class="form-control">
@@ -131,6 +147,23 @@ function MemberModify__submitForm(form) {
                     이메일
                 </label>
                 <input value="${rq.loginedMember.email }" class="input input-bordered w-full" type="email" maxlength="30" name="email" placeholder="이메일을 입력해주세요." />
+            </div>
+            
+            <div class="form-control">
+                <label class="label">
+                    프로필 이미지
+                </label>
+                <img class="w-40 h-40 mb-2 object-cover rounded-full" onerror="${rq.loginedMember.removeProfileImgIfNotExistsOnErrorHtmlAttr}" src="${rq.loginedMember.profileImgUri}" alt="">
+                <input accept="image/gif, image/jpeg, image/png" type="file" name="file__member__0__extra__profileImg__1" placeholder="프로필 이미지를 선택해주세요." />
+                <div>
+                    <label class="cursor-pointer label inline-flex">
+                        <span class="label-text mr-2">이미지 삭제</span>
+                        <div>
+                            <input type="checkbox" name="deleteFile__member__0__extra__profileImg__1" class="checkbox" value="Y">
+                            <span class="checkbox-mark"></span>
+                        </div>
+                    </label>
+                </div>
             </div>
             
             <div class="form-control">

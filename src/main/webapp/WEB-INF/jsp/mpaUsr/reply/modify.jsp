@@ -24,7 +24,7 @@ function ReplyModify__submitForm(form) {
 }
 </script>
 
-<div class="section section-article-write">
+<div class="section section-reply-modify">
 	<div class="container mx-auto">
 	    <form method="POST" action="doModify" onsubmit="ReplyModify__submitForm(this); return false;">
 	        <input type="hidden" name="id" value="${reply.id}" />

@@ -12,6 +12,7 @@
 		LEFT JOIN member AS M
 		ON A.memberId = M.id
 		WHERE A.boardId = #{boardId}
+		and A.delStatus = 0
 		<if test="searchKeyword != null">
 			<if test="searchKeywordType == 'titleAndBody'">
 				AND (

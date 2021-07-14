@@ -100,6 +100,14 @@
             <artifactId>javax.mail</artifactId>
             <version>1.6.2</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava 자바형 제이쿼리-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1.1-jre</version>
+        </dependency>
+        
 	</dependencies>
 
 	<build>

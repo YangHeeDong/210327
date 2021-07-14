@@ -33,4 +33,17 @@ public class Article {
 
         return bodyForPrint;
     }
+    
+    public String getWriterProfileImgUri() {
+    	return "/common/genFile/file/member/"+memberId+"/extra/profileImg/1";
+    }
+    
+    public String getWriterProfileFallbackImgUri() {
+        return "https://via.placeholder.com/300?text=^_^";
+    }
+    
+    public String getWriterProfileFallbackImgOnErrorHtmlAttr() {
+        return "this.src = '" + getWriterProfileFallbackImgUri() + "'";
+    }
+    
 }

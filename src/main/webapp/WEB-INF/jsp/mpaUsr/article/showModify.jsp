@@ -30,22 +30,23 @@ function ArticleWrite__submitForm(form) {
 }
 </script>
 
-<div class="section section-article-write">
+<div class="section section-Member-modify">
 	<div class="container mx-auto">
-	    <form method="POST" action="doWrite" onsubmit="ArticleWrite__submitForm(this); return false;">
-	    	<input type="hidden" name="boardId" value=${board.id } />
+	    <form method="POST" action="doModify" onsubmit="ArticleWrite__submitForm(this); return false;">
+	    	<input type="hidden" name="id" value=${article.id } />
+	    	<input type="hidden" name="redirectUri" value=${param.redirectUri } />
 	        <div class="form-control">
                 <label class="label">
                     제목
                 </label>
-                <input class="input input-bordered w-full" type="text" maxlength="100" name="title" placeholder="제목을 입력해주세요." />
+                <input class="input input-bordered w-full" type="text" maxlength="100" name="title" placeholder="제목을 입력해주세요." value=${article.title } />
             </div>
 
             <div class="form-control">
                 <label class="label">
                     내용
                 </label>
-                <textarea class="textarea textarea-bordered w-full h-24" placeholder="내용을 입력해주세요." name="body" maxlength="2000"></textarea>
+                <textarea class="textarea textarea-bordered w-full h-24" placeholder="내용을 입력해주세요." name="body" maxlength="2000">${article.body }</textarea>
             </div>
 
             <div class="mt-4 btn-wrap gap-1">

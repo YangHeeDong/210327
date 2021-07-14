@@ -33,7 +33,7 @@ function MemberCheckPassWord__submitForm(form) {
 }
 </script>
 
-<div class="section section-article-list px-2">
+<div class="section section-member-checkPassword px-2">
 	<div class="container mx-auto">
 	    <form method="POST" action="doCheckPassword" onsubmit="MemberCheckPassWord__submitForm(this); return false;" >
 	        <input type="hidden" name="redirectUri" value="${param.afterUri }" />

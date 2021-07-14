@@ -7,82 +7,6 @@
 
 <%@ include file="../common/head.jspf"%>
 
-<style>
-.reply-list [data-id]{
-	transition: background-color 1s;
-}
-
-.reply-list [data-id].focus{
-	background-color: #efefef;
-	transition: background-color 0s;
-}
-</style>
-
-<script>
-function ReplyList__goToReply(id){
-	setTimeout(function(){
-		const $target = $('.reply-list [data-id="'+id+'"]');
-		const targetOffset = $target.offset();
-		$(window).scrollTop(targetOffset.top - 50);
-		$target.addClass('focus');
-		
-		setTimeout(function(){
-			$target.removeClass('focus');
-		}, 1000);
-		
-	},1000);
-}
-
-function ReplyList__deleteReply(btn){
-	const $clicked = $(btn);
-	const $target = $clicked.closest('[data-id]');
-	const id = $target.attr('data-id');
-	
-	$clicked.html('삭제중..');
-	
-	$.post(
-		'../reply/doDeleteAjax',
-		{
-			id: id
-		},
-		function(data){
-			if(data.success){
-				$target.remove();
-			}else{
-				 if ( data.msg ) {
-                     alert(data.msg);
-                 }
-				$clicked.html('삭제 실패!!');
-			}
-		},
-		'json'
-	)
-}
-
-if(param.focusReplyId){
-	ReplyList__goToReply(param.focusReplyId);
-}
-
-</script>
-
-<script>
-let ReplyWrite__submitFormDone = false;
-function ReplyWrite__submitForm(form) {
-    if ( ReplyWrite__submitFormDone ) {
-        return;
-    }
-    form.body.value = form.body.value.trim();
-    if ( form.body.value.length == 0 ) {
-        alert('내용을 입력해주세요.');
-        form.body.focus();
-        return;
-    }
-	
-    form.submit();
-    ReplyWrite__submitFormDone = true;
-}
-</script>
-
 <div class="section section-article-detail">
 	<div class="container mx-auto">
 	    <div class="card bordered shadow-lg item-bt-1-not-last-child">
@@ -98,7 +22,7 @@ function ReplyWrite__submitForm(form) {
                     <div class="flex">
                         <span>
                             <span>Comments:</span>
-                            <span class="text-gray-400 text-light">30</span>
+                            <span class="text-gray-400 text-light">${replies.size() }</span>
                         </span>
                         <span class="ml-3">
                             <span>Views:</span>
@@ -118,15 +42,18 @@ function ReplyWrite__submitForm(form) {
                         </div>
                     </div>
 
+                    <div class="mt-3">
+                        <span class="badge badge-accent">작성자</span>
+                        <div class="mt-2">
+                            <img class="w-40 h-40 object-cover rounded" onerror="${article.writerProfileFallbackImgOnErrorHtmlAttr}" src="${article.writerProfileImgUri}" alt="">
+                            <span>${article.extra__writerName}</span>
+                        </div>
+                    </div>
+
                     <div class="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                         <div>
                             <span class="badge badge-primary">번호</span>
                             <span>${article.id}</span>
-                        </div>
-
-                        <div>
-                            <span class="badge badge-accent">작성자</span>
-                            <span>${article.extra__writerName}</span>
                         </div>
 
                         <div>
@@ -142,9 +69,6 @@ function ReplyWrite__submitForm(form) {
 
                     <div class="mt-6">
                         <span class="badge badge-outline">본문</span>
-                        <div class="mt-3">
-                            <img class="rounded" src="https://i.pravatar.cc/250?img=37" alt="">
-                        </div>
                         <div class="mt-3">
                             ${article.bodyForPrint}
                         </div>
@@ -163,11 +87,27 @@ function ReplyWrite__submitForm(form) {
                 <c:if test="${rq.logined}">
                     <div class="px-4 py-8">
                         <!-- 댓글 입력 시작 -->
+                        <script>
+                        let ReplyWrite__submitFormDone = false;
+                        function ReplyWrite__submitForm(form) {
+                            if ( ReplyWrite__submitFormDone ) {
+                                return;
+                            }
+                            form.body.value = form.body.value.trim();
+                            if ( form.body.value.length == 0 ) {
+                                alert('내용을 입력해주세요.');
+                                form.body.focus();
+                                return;
+                            }
+                            form.submit();
+                            ReplyWrite__submitFormDone = true;
+                        }
+                        </script>
                         <form method="POST" action="../reply/doWrite" class="relative flex py-4 text-gray-600 focus-within:text-gray-400" onsubmit="ReplyWrite__submitForm(this); return false;">
                             <input type="hidden" name="relTypeCode" value="article" />
                             <input type="hidden" name="relId" value="${article.id}" />
                             <input type="hidden" name="redirectUri" value="${rq.currentUri}" />
-                            <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" alt="User avatar" src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=200&amp;q=200">
+                            <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" onerror="${rq.loginedMember.profileFallbackImgOnErrorHtmlAttr}" src="${rq.loginedMember.profileImgUri}" alt="">
 
                             <span class="absolute inset-y-0 right-0 flex items-center pr-6">
                                 <button type="submit" class="p-1 focus:outline-none focus:shadow-none hover:text-blue-500">
@@ -182,13 +122,64 @@ function ReplyWrite__submitForm(form) {
                 </c:if>
 
                 <!-- 댓글 리스트 -->
+                <style>
+                .reply-list [data-id] {
+                  transition: background-color 1s;
+                }
+                .reply-list [data-id].focus {
+                  background-color:#efefef;
+                  transition: background-color 0s;
+                }
+                </style>
+
+                <script>
+                function ReplyList__goToReply(id) {
+                    setTimeout(function() {
+                        const $target = $('.reply-list [data-id="' + id + '"]');
+                        const targetOffset = $target.offset();
+                        $(window).scrollTop(targetOffset.top - 50);
+                        $target.addClass('focus');
+                        setTimeout(function() {
+                            $target.removeClass('focus');
+                        }, 1000);
+                    }, 1000);
+                }
+                function ReplyList__deleteReply(btn) {
+                    const $clicked = $(btn);
+                    const $target = $clicked.closest('[data-id]');
+                    const id = $target.attr('data-id');
+                    $clicked.text('삭제중...');
+                    $.post(
+                        '../reply/doDeleteAjax',
+                        {
+                            id: id
+                        },
+                        function(data) {
+                            if ( data.success ) {
+                                $target.remove();
+                            }
+                            else {
+                                if ( data.msg ) {
+                                    alert(data.msg);
+                                }
+                                $clicked.text('삭제실패!!');
+                            }
+                        },
+                        'json'
+                    );
+                }
+                if ( param.focusReplyId ) {
+                    ReplyList__goToReply(param.focusReplyId);
+                }
+                </script>
+
                 <div class="reply-list">
                     <c:forEach items="${replies}" var="reply">
-                        <div data-id="${reply.id }" class="py-5 px-4">
+                        <div data-id="${reply.id}" class="py-5 px-4">
                             <div class="flex">
                                 <!-- 아바타 이미지 -->
                                 <div class="flex-shrink-0">
-                                    <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" alt="User avatar" src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=200&amp;q=200">
+                                    <img class="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer" onerror="${reply.writerProfileFallbackImgOnErrorHtmlAttr}" src="${reply.writerProfileImgUri}" >
                                 </div>
 
                                 <div class="flex-grow px-1">
@@ -218,6 +209,8 @@ function ReplyWrite__submitForm(form) {
                                         <span><i class="fas fa-trash-alt"></i></span>
                                         <span>글 삭제</span>
                                     </a>
+                                </c:if>
+                                <c:if test="${reply.memberId == rq.loginedMemberId}">
                                     <a href="../reply/modify?id=${reply.id}&redirectUri=${rq.encodedCurrentUri}" class="plain-link">
                                         <span><i class="far fa-edit"></i></span>
                                         <span>글 수정</span>

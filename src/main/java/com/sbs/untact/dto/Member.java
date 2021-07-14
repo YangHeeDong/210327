@@ -14,11 +14,28 @@ public class Member {
 	private String name;
 	private String nickname;
 	private String email;
-	private int cellphoneNo;
+	private String cellphoneNo;
 	private boolean delStatus;
 	private String delDate;
     
     public String getAuthLevelName() {
     	return "일반회원";
     }
+    
+    public String getProfileImgUri() {
+        return "/common/genFile/file/member/" + id + "/extra/profileImg/1";
+    }
+
+    public String getProfileFallbackImgUri() {
+        return "https://via.placeholder.com/300?text=^_^";
+    }
+
+    public String getProfileFallbackImgOnErrorHtmlAttr() {
+        return "this.src = '" + getProfileFallbackImgUri() + "'";
+    }
+    
+    public String getRemoveProfileImgIfNotExistsOnErrorHtmlAttr() {
+        return "$(this).remove();";
+    }
+    
 }
