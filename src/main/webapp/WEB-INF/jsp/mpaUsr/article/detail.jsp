@@ -73,6 +73,20 @@
                             ${article.bodyForPrint}
                         </div>
                     </div>
+                    <div>
+                    	<br/>
+                    </div>
+                    <c:if test="${article.memberId == rq.loginedMemberId}">
+                        <a href="../article/doDelete?id=${article.id}" onclick="return confirm('정말 삭제 하시겠습니까?');" class="plain-link">
+                            <span><i class="fas fa-trash-alt"></i></span>
+                            <span>글 삭제</span>
+                        </a>
+						&nbsp&nbsp
+                        <a href="../article/showModify?id=${article.id}&redirectUri=${rq.encodedCurrentUri}" class="plain-link">
+                            <span><i class="far fa-edit"></i></span>
+                            <span>글 수정</span>
+                        </a>
+                    </c:if>
                 </div>
             </div>
 
@@ -207,13 +221,13 @@
                                 <c:if test="${reply.memberId == rq.loginedMemberId}">
                                     <a onclick="if ( confirm('정말 삭제하시겠습니까?') ) { ReplyList__deleteReply(this); } return false;" class="plain-link">
                                         <span><i class="fas fa-trash-alt"></i></span>
-                                        <span>글 삭제</span>
+                                        <span>댓글 삭제</span>
                                     </a>
                                 </c:if>
                                 <c:if test="${reply.memberId == rq.loginedMemberId}">
                                     <a href="../reply/modify?id=${reply.id}&redirectUri=${rq.encodedCurrentUri}" class="plain-link">
                                         <span><i class="far fa-edit"></i></span>
-                                        <span>글 수정</span>
+                                        <span>댓글 수정</span>
                                     </a>
                                 </c:if>
                             </div>
