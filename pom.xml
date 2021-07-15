@@ -10,11 +10,11 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sbs</groupId>
-	<artifactId>untactTeacher</artifactId>
+	<artifactId>untact</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>insta</name>
-	<description>untactTeacher</description>
+	<description>untact</description>
 	<properties>
 		<java.version>8</java.version>
 	</properties>
