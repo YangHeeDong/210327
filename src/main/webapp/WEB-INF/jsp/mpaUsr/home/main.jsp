@@ -16,7 +16,6 @@
     height: 100%;
     background-size: cover;
     display:flex;
-	justify-content:center;
 	align-items:center;
   }
 
